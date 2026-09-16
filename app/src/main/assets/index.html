@@ -60,7 +60,84 @@
 
 <script>
 const BUILTIN_TOPICS = [
-  // Bu yerga 7-sinf mavzulari qo'shiladi
+  {
+    id: "builtin_1",
+    title: "Ajdodlarimizning ma'naviy qadriyatlari (7-sinf, 1-mavzu)",
+    region: "vatan",
+    guide: `1-MAVZU. AJDODLARIMIZNING MA'NAVIY QADRIYATLARI — JAHON SIVILIZATSIYASI ASOSLARIDAN BIRI
+
+1. O'rta asrlar tushunchasi
+«O'rta asrlar» tushunchasini tarix faniga italyan tarixchilari olib kirgan. Bu tushuncha xususiy mulkchilik shaklining o'zgarishi bilan bog'liq.
+Sharq mamlakatlarida yer-mulk munosabatlari qadimdan jamoaviy asosda rivojlangan. Shu sababli «o'rta asrlar» tushunchasi Turon tarixida shartli ravishda qo'llanadi.
+
+2. Yevropa va Turon tarixida o'rta asrlarning boshlanishi
+Yevropada o'rta asrlarning boshlanishi Rim imperiyasining qulashi bilan bog'liq. Bu voqea 476-yil, V asr oxirlariga to'g'ri keladi.
+Turon tarixida esa o'rta asrlar IV asr oxirlari va V asr o'rtalaridan, siyosiy maydonda kidariylar, xioniylar va eftaliylar kabi qabila uyushmalari paydo bo'lgan davrdan boshlanadi.
+
+3. O'rta asrlarning bosqichlari
+O'rta asrlar uch bosqichga bo'linadi:
+- ilk o'rta asrlar
+- rivojlangan o'rta asrlar
+- so'nggi o'rta asrlar
+Bu davrlarda Xorazm, xioniylar, kidariylar, eftaliylar, Turk xoqonligi, Somoniylar, Qoraxoniylar, Xorazmshohlar, Amir Temur va temuriylar kabi davlat va siyosiy tuzilmalar mavjud bo'lgan.
+
+4. Ilk o'rta asrlardagi ijtimoiy o'zgarishlar
+Ilk o'rta asrlarda «qishloq hokimlari» deb atalgan katta yer egalari — dehqonlar shakllandi.
+Ularning ekinzorlarida ishlovchi yersiz aholi kadivarlar deb atalgan.
+Shunday qilib:
+- dehqon → katta yer egasi, «qishloq hokimi»
+- kadivar → katta yer egalarining ekinzorlarida ishlovchi yersiz aholi
+Yerda ishlash tartiblarining tubdan o'zgarishi natijasida aholi o'rtasidagi tabaqalanish yanada keskinlashdi.
+
+5. Arab xalifaligi va islom dini
+VIII asr boshlarida mamlakatimiz hududida Arab xalifaligi hukmronligi o'rnatildi.
+Shundan so'ng o'lkamiz madaniyatiga islom dinining ta'siri kuchaydi.
+Keyingi asrlarda ilm-ma'rifat rivoji uchun sharoit yuzaga keldi.
+
+6. Yurtimizning tarixiy nomlari
+Yurtimiz qadimdan Turon deb atalgan.
+Arablar davridan boshlab yurtimiz va unga tutash hududlar Movarounnahr va Xuroson deb atalgan.
+XVIII–XIX asrlarda g'arb olimlari va sayyohlari tomonidan bu hududlar O'rta Osiyo yoki Markaziy Osiyo deb nomlangan.
+Eslab qolish uchun: Turon → Movarounnahr va Xuroson → O'rta Osiyo / Markaziy Osiyo
+
+7. IX–XII asrlar ilm-ma'rifati
+Yurtimizdan jahon ilm-fani va ma'naviy hayotiga katta hissa qo'shgan buyuk allomalar yetishib chiqqan.
+Ilm-fanga oid mashhur allomalar: Muhammad ibn Muso Xorazmiy, Ahmad Farg'oniy, Abu Rayhon Beruniy, Abu Ali ibn Sino.
+Islom dini va ta'limotiga oid asarlar yaratgan mashhur ulamolar: Imom Buxoriy, Imom Termiziy, Mahmud Zamahshariy, Ahmad Yassaviy, Najmiddin Kubro.
+
+8. O'zbek xalqining shakllanishi
+O'rta asrlar tarixida «o'zbiy» va «o'zbek» atamalari bilan ulug'langan o'zbek xalqi shakllanganligi haqida ma'lumotlar mavjud.
+
+Muallif: O. Raxmonov`,
+    questions: [
+      { q:"O'zbek xalqi o'rta asrlarda qaysi atamalar bilan ulug'langan?", opts:["o'zbiy va o'zbek","o'zturk va qipchoq","xoqon va o'lmas","o'zbiy va qipchoq"], correct:0 },
+      { q:"«O'rta asrlar» tushunchasini tarix faniga qaysi mamlakat tarixchilari olib kirgan?", opts:["ingliz","italyan","fransuz","nemis"], correct:1 },
+      { q:"Yevropada o'rta asrlar boshlanishi qaysi davr voqealariga to'g'ri keladi?", opts:["V asr oxirlari","VI asr boshlari","IV asr oxirlari","V asr ortalari"], correct:0 },
+      { q:"Yevropada o'rta asrlarning boshlanishiga sabab bo'lgan voqeani aniqlang.", opts:["Rim imperiyasining qulashi","Muqaddas Rim imperiyasining tashkil topishi","Salib yurishlarining boshlanishi","Konstantinopolning ishg'ol etilishi"], correct:0 },
+      { q:"Turon tarixida o'rta asrlar qaysi davrdan boshlangan deb hisoblanadi?", opts:["IV asr oxirlari hamda V asr o'rtalaridan","V asr oxirlari hamda VI asr boshlaridan","IV asr boshlari hamda V asr oxirlaridan","VI asr o'rtalari hamda VII asr boshlaridan"], correct:0 },
+      { q:"Siyosiy maydonda kidariylar, xioniylar va eftaliylar kabi etnik atamalar ostida tushuniladigan qabila uyushmalari qachon paydo bo'lgan?", opts:["IV asr oxirlari hamda V asr o'rtalaridan","V asr oxirlari hamda VI asr boshlaridan","IV asr boshlari hamda V asr oxirlaridan","VI asr o'rtalari hamda VII asr boshlaridan"], correct:0 },
+      { q:"Bizning tariximizda o'rta asrlar boshlanishi qaysi voqea bilan bog'liq?", opts:["siyosiy maydonda Somoniylar, Qoraxoniylar, Xorazmshohlar davlatlari paydo bo'lgan davrdan","Islom dinining O'rta Osiyoga kirib kelishi davridan","o'zbek xalqining shakllanib bo'lishi davridan","siyosiy maydonda kidariylar, xioniylar, eftaliylar kabi etnik atamalar ostida tushuniladigan qabila uyushmalari paydo bo'lgan davrdan"], correct:3 },
+      { q:"O'rta asrlar nechta asosiy bosqichga bo'linadi?", opts:["2 ta","3 ta","4 ta","5 ta"], correct:1 },
+      { q:"O'rta asrlarning asosiy bosqichlari qaysi javobda to'g'ri ko'rsatilgan?", opts:["ilk, rivojlangan va so'nggi o'rta asrlar","ilk va rivojlangan o'rta asrlar","ilk, o'rta, yangi, so'nggi o'rta asrlar","feodalizm va kapitalizm davrlari o'rta asrlari"], correct:0 },
+      { q:"Bizning tariximizda ilk o'rta asrlar qaysi asrlarni o'z ichiga oladi?", opts:["V–XI asrlar","IV–VIII asrlar","IX–XV asrlar","IV–XIII asrlar"], correct:1 },
+      { q:"Bizning tariximizda rivojlangan o'rta asrlar qaysi asrlarni o'z ichiga oladi?", opts:["V–XI asrlar","IV–VIII asrlar","IX–XV asrlar","IX–XIII asrlar"], correct:2 },
+      { q:"Bizning tariximizda so'nggi o'rta asrlar qaysi asrlarni o'z ichiga oladi?", opts:["XIII–XIX asrlar","XVI–XVIII asrlar","XV–XVIII asrlar","XVI–XIX asrlar"], correct:3 },
+      { q:"Davlatchilik tariximizda quyidagi qaysi davlat mavjud bo'lmagan?", opts:["shatagilar","Turk hoqonligi","qoraxoniylar","somoniylar"], correct:0 },
+      { q:"Turon tarixida ilk o'rta asrlarda shakllangan toifalar qaysi javobda to'g'ri ko'rsatilgan?", opts:["dehqonlar, barzikorlar, qullar, qo'shechilar","dehqonlar, kadivariylar, kashovarz, chokar","kadivariylar, qullar, yanichar, chokar","barzikorlar, qo'shechilar, kashovarz, yanichar"], correct:1 },
+      { q:"Ilk o'rta asrlarda «qishloq hokimlari» deb atalgan katta yer egalari qaysi toifaga mansub bo'lgan?", opts:["Kadvart","kashovarz","dehqon","amirzoda"], correct:2 },
+      { q:"Ilk o'rta asrlarda katta yer egalarining ekinzorlarida ishlagan yersiz aholi qanday atalgan?", opts:["barzikor","kashovarz","kadivar","dehqon"], correct:2 },
+      { q:"Ilk o'rta asrlarda shakllangan kadivariylar qaysi ta'rifda to'g'ri tavsiflangan?", opts:["qishloq jamoasining yer va suvdan iborat umumiy mulkka ega bo'lgan erkin ziroatchilari","\"qishloq hokimlari\" deb atalgan katta yer egalari","katta yer egasidan yer ijaraga olgan qishloq jamoasi a'zolari","katta yer egalarining ekinzorlarida ishlovchi yersiz garam aholi"], correct:3 },
+      { q:"Ilk o'rta asrlarda shakllangan kashovarzlar qaysi ta'rifda to'g'ri tavsiflangan?", opts:["qishloq jamoasining yer va suvdan iborat umumiy mulkka ega bo'lgan erkin ziroatchilari","\"qishloq hokimlari\" deb atalgan katta yer egalari","katta yer egasidan yer ijaraga olgan qishloq jamoasi a'zolari","katta yer egalarining ekinzorlarida ishlovchi yersiz garam aholi"], correct:0 },
+      { q:"Mamlakatimiz hududida arab xalifaligi hukmronligi qachon o'rnatilgan?", opts:["VIII asr boshlarida","VII asr boshlarida","IX asr boshlarida","X asr o'rtalarida"], correct:0 },
+      { q:"Ilk o'rta asrlarda «dehqon» atamasi kimlarga nisbatan qo'llanilgan?", opts:["yer va suvdan iborat umumiy mulkka ega bo'lgan qishloq jamoasi a'zolari","\"qishloq hokimlari\" deb atalgan katta yer egalari","katta yer egasidan yer ijaraga olgan qishloq jamoasi a'zolari","katta yer egalarining ekinzorlarida ishlovchi yersiz kashfilar"], correct:1 },
+      { q:"Ilk o'rta asrlarda yerda ishlash tartiblarining tubdan o'zgarishi qanday oqibatga olib kelgan?", opts:["mahalliy aholining yerlaridagi hosil miqdorini oshirgan","aholi o'rtasida tabaqalanishni yanada keskinlashtirgan","mehnat unumdorligining oshishiga olib kelgan","zodagon dehqonlarning aholi ustidan nazoratini kuchaytirgan"], correct:1 },
+      { q:"IX–XII asrlarda yashab ijod qilgan va islom dini hamda ta'limotiga oid asarlar yaratgan allomalar qaysi javobda to'g'ri ko'rsatilgan?", opts:["Imom Buxoriy, Ahmad al-Farg'oniy, Muso al-Xorazmiy","Ahmad al-Farg'oniy, Mahmud Zamahshari, Ahmad Yassaviy","Imom Buxoriy, Mahmud Zamahshari, Ahmad Yassaviy, Najmiddin Kubro","Muso al-Xorazmiy, Ahmad Yassaviy, Najmiddin Kubro"], correct:2 },
+      { q:"Yurtimiz arablar davrigacha qanday nom bilan atalgan?", opts:["Turon","Movarounnahr","Qashqar","Yettisuv"], correct:0 },
+      { q:"Yurtimiz (O'rta Osiyo) arablar davrida qaysi nomlar bilan atalgan?", opts:["Turon va O'rta Osiyo","Movarounnahr va Xuroson","Xuroson va Markaziy Osiyo","Turkiston va Sug'd"], correct:1 },
+      { q:"Yurtimiz g'arb olimlari va sayyohlari tomonidan qaysi asrlardan boshlab «O'rta Osiyo» yoki «Markaziy Osiyo» deb atala boshlangan?", opts:["XVIII–XIX asrlardan","XVI–XVII asrlardan","XIX–XX asrlardan","XVII–XVIII asrlardan"], correct:0 },
+      { q:"Yurtimiz (mintaqamiz) uchun quyidagi nomlarning qaysi biri nisbatan qadimiyroq hisoblanadi?", opts:["Turkiston","Turon","Movarounnahr","O'rta Osiyo"], correct:1 }
+    ]
+  }
 ];
 
 let state = {
