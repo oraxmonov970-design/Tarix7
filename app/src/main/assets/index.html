@@ -1,1 +1,288 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Oʻzbekiston tarixi - 7-sinf</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --accent:#38bdf8; --accent2:#22c55e;
+    --danger:#ef4444; --text:#f1f5f9; --muted:#94a3b8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI',Tahoma,sans-serif;
+    background:var(--bg); color:var(--text); padding-bottom:24px;
+  }
+  header{
+    padding:16px; text-align:center; background:var(--card);
+    position:sticky; top:0; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,.4);
+  }
+  header h1{margin:0; font-size:18px;}
+  main{padding:12px; max-width:640px; margin:0 auto;}
+  .card{
+    background:var(--card); border-radius:12px; padding:14px; margin-bottom:10px;
+    box-shadow:0 1px 4px rgba(0,0,0,.3);
+  }
+  .topic-item{
+    display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer;
+  }
+  .topic-item b{font-size:15px;}
+  .topic-item span.region{font-size:11px; color:var(--muted);}
+  button{
+    background:var(--accent); color:#0f172a; border:none; border-radius:8px;
+    padding:10px 16px; font-size:14px; font-weight:600; cursor:pointer; margin:4px 4px 4px 0;
+  }
+  button.secondary{background:#334155; color:var(--text);}
+  button.correct{background:var(--accent2); color:#fff;}
+  button.wrong{background:var(--danger); color:#fff;}
+  .opt-btn{
+    display:block; width:100%; text-align:left; background:#334155; color:var(--text);
+    margin-bottom:8px; padding:12px; border-radius:8px; border:none; font-size:14px;
+  }
+  .guide-text{white-space:pre-wrap; line-height:1.6; font-size:15px;}
+  .hidden{display:none;}
+  .progress{font-size:13px; color:var(--muted); margin-bottom:8px;}
+  .checkbox-row{display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #334155;}
+  .score-box{text-align:center; padding:24px;}
+  .score-box h2{font-size:32px; margin:8px 0;}
+  a.back{color:var(--accent); text-decoration:none; font-size:14px; display:inline-block; margin-bottom:10px;}
+</style>
+</head>
+<body>
 
+<header>
+  <h1>Oʻzbekiston tarixi — 7-sinf</h1>
+</header>
+
+<main id="app"></main>
+
+<script>
+const BUILTIN_TOPICS = [
+  // Bu yerga 7-sinf mavzulari qo'shiladi
+];
+
+let state = {
+  screen: 'menu',
+  currentTopic: null,
+  quizQuestions: [],
+  quizIndex: 0,
+  score: 0,
+  selectedIds: []
+};
+
+const STORAGE_KEY = 'tarix7_progress';
+
+function saveProgress(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      lastScreen: state.screen
+    }));
+  }catch(e){}
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function prepareQuiz(rawQuestions){
+  const shuffledQ = shuffle(rawQuestions);
+  return shuffledQ.map(item=>{
+    const optIndices = shuffle(item.opts.map((_,i)=>i));
+    const newOpts = optIndices.map(i=>item.opts[i]);
+    const newCorrect = optIndices.indexOf(item.correct);
+    return { q:item.q, opts:newOpts, correct:newCorrect };
+  });
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  if(state.screen === 'menu') renderMenu(app);
+  else if(state.screen === 'guide') renderGuide(app);
+  else if(state.screen === 'test') renderTest(app);
+  else if(state.screen === 'select') renderSelect(app);
+  else if(state.screen === 'result') renderResult(app);
+
+  saveProgress();
+}
+
+function renderMenu(app){
+  const wrap = document.createElement('div');
+
+  const selectCard = document.createElement('div');
+  selectCard.className = 'card';
+  selectCard.innerHTML = `<b>Mavzu tanlab test</b><br><span style="color:var(--muted);font-size:13px;">Bir nechta mavzudan aralash test</span>`;
+  selectCard.style.cursor = 'pointer';
+  selectCard.onclick = ()=>{ state.screen='select'; state.selectedIds=[]; render(); };
+  wrap.appendChild(selectCard);
+
+  if(BUILTIN_TOPICS.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'card';
+    empty.innerHTML = `<span style="color:var(--muted);">Hozircha mavzular qo'shilmagan.</span>`;
+    wrap.appendChild(empty);
+  }
+
+  BUILTIN_TOPICS.forEach(topic=>{
+    const el = document.createElement('div');
+    el.className = 'card topic-item';
+    el.innerHTML = `<div><b>${topic.title}</b><br><span class="region">${topic.region==='vatan'?'Vatan tarixi':'Jahon tarixi'}</span></div><div>›</div>`;
+    el.onclick = ()=>{ state.currentTopic = topic; state.screen='guide'; render(); };
+    wrap.appendChild(el);
+  });
+
+  app.appendChild(wrap);
+}
+
+function renderGuide(app){
+  const t = state.currentTopic;
+  const back = document.createElement('a');
+  back.className='back'; back.href='#'; back.textContent='‹ Orqaga';
+  back.onclick=(e)=>{e.preventDefault(); state.screen='menu'; render();};
+  app.appendChild(back);
+
+  const card = document.createElement('div');
+  card.className='card';
+  card.innerHTML = `<h2 style="margin-top:0;font-size:17px;">${t.title}</h2><div class="guide-text">${t.guide}</div>`;
+  app.appendChild(card);
+
+  const startBtn = document.createElement('button');
+  startBtn.textContent = 'Testni boshlash';
+  startBtn.onclick = ()=>{
+    state.quizQuestions = prepareQuiz(t.questions);
+    state.quizIndex = 0;
+    state.score = 0;
+    state.screen = 'test';
+    render();
+  };
+  app.appendChild(startBtn);
+}
+
+function renderTest(app){
+  const q = state.quizQuestions[state.quizIndex];
+  if(!q){ state.screen='result'; render(); return; }
+
+  const progress = document.createElement('div');
+  progress.className='progress';
+  progress.textContent = `Savol ${state.quizIndex+1} / ${state.quizQuestions.length}`;
+  app.appendChild(progress);
+
+  const card = document.createElement('div');
+  card.className='card';
+  const qText = document.createElement('div');
+  qText.style.fontSize='16px'; qText.style.marginBottom='12px'; qText.style.fontWeight='600';
+  qText.textContent = q.q;
+  card.appendChild(qText);
+
+  let answered = false;
+  q.opts.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='opt-btn';
+    b.textContent = opt;
+    b.onclick = ()=>{
+      if(answered) return;
+      answered = true;
+      const buttons = card.querySelectorAll('.opt-btn');
+      buttons.forEach((bb,i)=>{
+        bb.disabled = true;
+        if(i === q.correct) bb.classList.add('correct');
+        else if(i === idx) bb.classList.add('wrong');
+      });
+      if(idx === q.correct) state.score++;
+      nextBtn.classList.remove('hidden');
+    };
+    card.appendChild(b);
+  });
+  app.appendChild(card);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = (state.quizIndex+1 < state.quizQuestions.length) ? 'Keyingisi' : 'Yakunlash';
+  nextBtn.className = 'hidden';
+  nextBtn.onclick = ()=>{
+    state.quizIndex++;
+    render();
+  };
+  app.appendChild(nextBtn);
+}
+
+function renderSelect(app){
+  const back = document.createElement('a');
+  back.className='back'; back.href='#'; back.textContent='‹ Orqaga';
+  back.onclick=(e)=>{e.preventDefault(); state.screen='menu'; render();};
+  app.appendChild(back);
+
+  const info = document.createElement('div');
+  info.className='card';
+  info.innerHTML = `<b>Mavzularni tanlang (maks. 5 ta)</b>`;
+  app.appendChild(info);
+
+  const list = document.createElement('div');
+  list.className='card';
+  BUILTIN_TOPICS.forEach(t=>{
+    const row = document.createElement('label');
+    row.className='checkbox-row';
+    const cb = document.createElement('input');
+    cb.type='checkbox';
+    cb.checked = state.selectedIds.includes(t.id);
+    cb.onchange = ()=>{
+      if(cb.checked){
+        if(state.selectedIds.length>=5){ cb.checked=false; return; }
+        state.selectedIds.push(t.id);
+      }else{
+        state.selectedIds = state.selectedIds.filter(id=>id!==t.id);
+      }
+    };
+    row.appendChild(cb);
+    const span = document.createElement('span');
+    span.textContent = t.title;
+    row.appendChild(span);
+    list.appendChild(row);
+  });
+  app.appendChild(list);
+
+  const startBtn = document.createElement('button');
+  startBtn.textContent = 'Tanlangan mavzulardan test boshlash';
+  startBtn.onclick = ()=>{
+    if(state.selectedIds.length===0) return;
+    const pool = [];
+    BUILTIN_TOPICS.filter(t=>state.selectedIds.includes(t.id))
+      .forEach(t=> pool.push(...t.questions));
+    state.quizQuestions = prepareQuiz(pool);
+    state.quizIndex = 0;
+    state.score = 0;
+    state.screen = 'test';
+    render();
+  };
+  app.appendChild(startBtn);
+}
+
+function renderResult(app){
+  const total = state.quizQuestions.length;
+  const pct = total ? Math.round((state.score/total)*100) : 0;
+  const box = document.createElement('div');
+  box.className = 'card score-box';
+  box.innerHTML = `
+    <div style="color:var(--muted);">Natija</div>
+    <h2>${state.score} / ${total}</h2>
+    <div style="color:var(--muted);">${pct}%</div>
+  `;
+  app.appendChild(box);
+
+  const menuBtn = document.createElement('button');
+  menuBtn.textContent = 'Bosh menyuga qaytish';
+  menuBtn.onclick = ()=>{ state.screen='menu'; render(); };
+  app.appendChild(menuBtn);
+}
+
+render();
+</script>
+</body>
+</html>
