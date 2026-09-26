@@ -171,6 +171,12 @@ function shuffle(arr){
 function prepareQuiz(rawQuestions){
   const shuffledQ = shuffle(rawQuestions);
   return shuffledQ.map(item=>{
+    if(item.type === 'match'){
+      const rightIndices = shuffle(item.right.map((_,i)=>i));
+      const newRight = rightIndices.map(i=>item.right[i]);
+      const newCorrect = item.correct.map(ci => rightIndices.indexOf(ci));
+      return { q:item.q, left:item.left, right:newRight, correct:newCorrect, type:'match' };
+    }
     const optIndices = shuffle(item.opts.map((_,i)=>i));
     const newOpts = optIndices.map(i=>item.opts[i]);
     let newCorrect;
@@ -261,7 +267,7 @@ function renderTest(app){
   card.className='card';
   const qText = document.createElement('div');
   qText.style.fontSize='16px'; qText.style.marginBottom='12px'; qText.style.fontWeight='600';
-  qText.textContent = q.q + (q.type === 'multi' ? " (bir nechta javob to'g'ri)" : '');
+  qText.textContent = q.q + (q.type === 'multi' ? " (bir nechta javob to'g'ri)" : q.type === 'match' ? " (mos juftlarni bog'lang)" : '');
   card.appendChild(qText);
 
   let answered = false;
@@ -312,6 +318,90 @@ function renderTest(app){
       nextBtn.classList.remove('hidden');
     };
     app.appendChild(checkBtn);
+  } else if(q.type === 'match'){
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.gap = '10px';
+    const leftCol = document.createElement('div');
+    leftCol.style.flex = '1';
+    const rightCol = document.createElement('div');
+    rightCol.style.flex = '1';
+
+    let selectedLeft = null;
+    const pairs = {};
+    const leftBtns = [];
+    const rightBtns = [];
+
+    function refreshLabels(){
+      q.left.forEach((txt,i)=>{
+        const paired = pairs.hasOwnProperty(i);
+        leftBtns[i].textContent = (i+1) + ') ' + txt + (paired ? '  \u2192 ' + String.fromCharCode(65+pairs[i]) : '');
+        leftBtns[i].style.outline = (selectedLeft === i) ? '2px solid #38bdf8' : 'none';
+      });
+      q.right.forEach((txt,j)=>{
+        const usedBy = Object.keys(pairs).find(k=>pairs[k]===j);
+        rightBtns[j].textContent = String.fromCharCode(65+j) + ') ' + txt + (usedBy!==undefined ? '  \u2190 ' + (parseInt(usedBy)+1) : '');
+      });
+    }
+
+    q.left.forEach((txt,i)=>{
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.onclick = ()=>{
+        if(answered) return;
+        if(pairs.hasOwnProperty(i)){
+          delete pairs[i];
+          selectedLeft = null;
+        } else {
+          selectedLeft = (selectedLeft === i) ? null : i;
+        }
+        refreshLabels();
+      };
+      leftBtns.push(b);
+      leftCol.appendChild(b);
+    });
+
+    q.right.forEach((txt,j)=>{
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.onclick = ()=>{
+        if(answered) return;
+        if(selectedLeft === null) return;
+        const usedBy = Object.keys(pairs).find(k=>pairs[k]===j);
+        if(usedBy !== undefined) delete pairs[usedBy];
+        pairs[selectedLeft] = j;
+        selectedLeft = null;
+        refreshLabels();
+      };
+      rightBtns.push(b);
+      rightCol.appendChild(b);
+    });
+
+    refreshLabels();
+    wrap.appendChild(leftCol);
+    wrap.appendChild(rightCol);
+    card.appendChild(wrap);
+    app.appendChild(card);
+
+    const checkBtn2 = document.createElement('button');
+    checkBtn2.textContent = 'Javobni tekshirish';
+    checkBtn2.onclick = ()=>{
+      if(answered) return;
+      if(Object.keys(pairs).length < q.left.length) return;
+      answered = true;
+      let allCorrect = true;
+      q.left.forEach((txt,i)=>{
+        const isRight = pairs[i] === q.correct[i];
+        if(!isRight) allCorrect = false;
+        leftBtns[i].disabled = true;
+        leftBtns[i].classList.add(isRight ? 'correct' : 'wrong');
+      });
+      rightBtns.forEach(b=>b.disabled = true);
+      if(allCorrect) state.score++;
+      checkBtn2.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+    };
+    app.appendChild(checkBtn2);
   } else {
     q.opts.forEach((opt,idx)=>{
       const b = document.createElement('button');
@@ -407,6 +497,6 @@ function renderResult(app){
 }
 
 render();
-  </script>
+</script>
 </body>
 </html>
