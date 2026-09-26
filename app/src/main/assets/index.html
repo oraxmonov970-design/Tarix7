@@ -173,8 +173,13 @@ function prepareQuiz(rawQuestions){
   return shuffledQ.map(item=>{
     const optIndices = shuffle(item.opts.map((_,i)=>i));
     const newOpts = optIndices.map(i=>item.opts[i]);
-    const newCorrect = optIndices.indexOf(item.correct);
-    return { q:item.q, opts:newOpts, correct:newCorrect };
+    let newCorrect;
+    if(Array.isArray(item.correct)){
+      newCorrect = item.correct.map(ci => optIndices.indexOf(ci)).sort((a,b)=>a-b);
+    } else {
+      newCorrect = optIndices.indexOf(item.correct);
+    }
+    return { q:item.q, opts:newOpts, correct:newCorrect, type: item.type || 'single' };
   });
 }
 
@@ -256,30 +261,10 @@ function renderTest(app){
   card.className='card';
   const qText = document.createElement('div');
   qText.style.fontSize='16px'; qText.style.marginBottom='12px'; qText.style.fontWeight='600';
-  qText.textContent = q.q;
+  qText.textContent = q.q + (q.type === 'multi' ? " (bir nechta javob to'g'ri)" : '');
   card.appendChild(qText);
 
   let answered = false;
-  q.opts.forEach((opt,idx)=>{
-    const b = document.createElement('button');
-    b.className='opt-btn';
-    b.textContent = opt;
-    b.onclick = ()=>{
-      if(answered) return;
-      answered = true;
-      const buttons = card.querySelectorAll('.opt-btn');
-      buttons.forEach((bb,i)=>{
-        bb.disabled = true;
-        if(i === q.correct) bb.classList.add('correct');
-        else if(i === idx) bb.classList.add('wrong');
-      });
-      if(idx === q.correct) state.score++;
-      nextBtn.classList.remove('hidden');
-    };
-    card.appendChild(b);
-  });
-  app.appendChild(card);
-
   const nextBtn = document.createElement('button');
   nextBtn.textContent = (state.quizIndex+1 < state.quizQuestions.length) ? 'Keyingisi' : 'Yakunlash';
   nextBtn.className = 'hidden';
@@ -287,6 +272,68 @@ function renderTest(app){
     state.quizIndex++;
     render();
   };
+
+  if(q.type === 'multi'){
+    const selected = new Set();
+    const optionEls = [];
+    q.opts.forEach((opt,idx)=>{
+      const b = document.createElement('button');
+      b.className='opt-btn';
+      b.textContent = '\u2610 ' + opt;
+      b.onclick = ()=>{
+        if(answered) return;
+        if(selected.has(idx)){
+          selected.delete(idx);
+          b.textContent = '\u2610 ' + opt;
+        }else{
+          selected.add(idx);
+          b.textContent = '\u2611 ' + opt;
+        }
+      };
+      optionEls.push(b);
+      card.appendChild(b);
+    });
+    app.appendChild(card);
+
+    const checkBtn = document.createElement('button');
+    checkBtn.textContent = 'Javobni tekshirish';
+    checkBtn.onclick = ()=>{
+      if(answered) return;
+      answered = true;
+      const selArr = Array.from(selected).sort((a,b)=>a-b);
+      const isCorrect = selArr.length === q.correct.length && selArr.every((v,i)=>v===q.correct[i]);
+      optionEls.forEach((bb,i)=>{
+        bb.disabled = true;
+        if(q.correct.includes(i)) bb.classList.add('correct');
+        else if(selected.has(i)) bb.classList.add('wrong');
+      });
+      if(isCorrect) state.score++;
+      checkBtn.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+    };
+    app.appendChild(checkBtn);
+  } else {
+    q.opts.forEach((opt,idx)=>{
+      const b = document.createElement('button');
+      b.className='opt-btn';
+      b.textContent = opt;
+      b.onclick = ()=>{
+        if(answered) return;
+        answered = true;
+        const buttons = card.querySelectorAll('.opt-btn');
+        buttons.forEach((bb,i)=>{
+          bb.disabled = true;
+          if(i === q.correct) bb.classList.add('correct');
+          else if(i === idx) bb.classList.add('wrong');
+        });
+        if(idx === q.correct) state.score++;
+        nextBtn.classList.remove('hidden');
+      };
+      card.appendChild(b);
+    });
+    app.appendChild(card);
+  }
+
   app.appendChild(nextBtn);
 }
 
@@ -359,7 +406,7 @@ function renderResult(app){
   app.appendChild(menuBtn);
 }
 
-render();
-</script>
+render
+  </script>
 </body>
 </html>
