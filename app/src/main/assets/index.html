@@ -138,7 +138,6 @@ Muallif: O. Raxmonov`,
       { q:"Yurtimiz (mintaqamiz) uchun quyidagi nomlarning qaysi biri nisbatan qadimiyroq hisoblanadi?", opts:["Turkiston","Turon","Movarounnahr","O'rta Osiyo"], correct:1 }
     ]
   },
-  },
   {
     id: "builtin_2",
     title: "IV-VII asrlarda mamlakatimiz xalqlarining turmush tarzi (7-sinf, 2-mavzu)",
@@ -221,7 +220,7 @@ Muallif: O. Raxmonov`,
       { q:"So'nggi antik davrda O'rta Osiyoning dehqonchilik viloyatlarida mahalliy hokimliklarning tashkil topishi va yiriklashish jarayoni kuzatilgan.", type:"tf", correct:true },
       { q:"Dehqonlar faqat qishloqlarda yashagan va shaharlarda hech qanday mulk yoki rastalarga ega bo'lmagan.", type:"tf", correct:false }
     ]
-        }
+  }
 ];
 
 let state = {
@@ -477,6 +476,7 @@ function renderTest(app){
     wrap.appendChild(rightCol);
     card.appendChild(wrap);
     app.appendChild(card);
+
     const checkBtn2 = document.createElement('button');
     checkBtn2.textContent = 'Javobni tekshirish';
     checkBtn2.onclick = ()=>{
@@ -695,4 +695,3 @@ render();
 </script>
 </body>
 </html>
-  
