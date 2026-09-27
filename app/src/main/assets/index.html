@@ -177,6 +177,17 @@ function prepareQuiz(rawQuestions){
       const newCorrect = item.correct.map(ci => rightIndices.indexOf(ci));
       return { q:item.q, left:item.left, right:newRight, correct:newCorrect, type:'match' };
     }
+    if(item.type === 'order'){
+      const indices = shuffle(item.items.map((_,i)=>i));
+      const shuffledItems = indices.map(i=>item.items[i]);
+      return { q:item.q, items:shuffledItems, indices:indices, type:'order' };
+    }
+    if(item.type === 'tf'){
+      return { q:item.q, correct: item.correct, type:'tf' };
+    }
+    if(item.type === 'fill'){
+      return { q:item.q, answers: item.answers, type:'fill' };
+    }
     const optIndices = shuffle(item.opts.map((_,i)=>i));
     const newOpts = optIndices.map(i=>item.opts[i]);
     let newCorrect;
@@ -267,7 +278,7 @@ function renderTest(app){
   card.className='card';
   const qText = document.createElement('div');
   qText.style.fontSize='16px'; qText.style.marginBottom='12px'; qText.style.fontWeight='600';
-  qText.textContent = q.q + (q.type === 'multi' ? " (bir nechta javob to'g'ri)" : q.type === 'match' ? " (mos juftlarni bog'lang)" : '');
+  qText.textContent = q.q + (q.type === 'multi' ? " (bir nechta javob to'g'ri)" : q.type === 'match' ? " (mos juftlarni bog'lang)" : q.type === 'order' ? " (tartib bilan bosing)" : '');
   card.appendChild(qText);
 
   let answered = false;
@@ -382,7 +393,6 @@ function renderTest(app){
     wrap.appendChild(rightCol);
     card.appendChild(wrap);
     app.appendChild(card);
-
     const checkBtn2 = document.createElement('button');
     checkBtn2.textContent = 'Javobni tekshirish';
     checkBtn2.onclick = ()=>{
@@ -402,6 +412,107 @@ function renderTest(app){
       nextBtn.classList.remove('hidden');
     };
     app.appendChild(checkBtn2);
+  } else if(q.type === 'tf'){
+    const opts = ["To'g'ri","Noto'g'ri"];
+    opts.forEach((opt,idx)=>{
+      const b = document.createElement('button');
+      b.className='opt-btn';
+      b.textContent = opt;
+      b.onclick = ()=>{
+        if(answered) return;
+        answered = true;
+        const chosenTrue = (idx===0);
+        const buttons = card.querySelectorAll('.opt-btn');
+        buttons.forEach((bb,i)=>{
+          bb.disabled = true;
+          const bbIsTrue = (i===0);
+          if(bbIsTrue === q.correct) bb.classList.add('correct');
+          else if(i===idx) bb.classList.add('wrong');
+        });
+        if(chosenTrue === q.correct) state.score++;
+        nextBtn.classList.remove('hidden');
+      };
+      card.appendChild(b);
+    });
+    app.appendChild(card);
+  } else if(q.type === 'fill'){
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = "Javobingizni yozing...";
+    input.style.cssText = 'width:100%;padding:12px;border-radius:8px;border:none;background:#334155;color:var(--text);font-size:14px;margin-bottom:10px;box-sizing:border-box;';
+    card.appendChild(input);
+    app.appendChild(card);
+
+    const feedback = document.createElement('div');
+    feedback.style.marginBottom = '8px';
+    feedback.style.fontSize = '14px';
+
+    const checkBtn3 = document.createElement('button');
+    checkBtn3.textContent = 'Javobni tekshirish';
+    checkBtn3.onclick = ()=>{
+      if(answered) return;
+      answered = true;
+      const userAns = input.value.trim().toLowerCase();
+      const isCorrect = q.answers.some(a=>a.trim().toLowerCase()===userAns);
+      input.disabled = true;
+      feedback.textContent = isCorrect ? '\u2705 To\'g\'ri!' : ('\u274c Noto\'g\'ri. To\'g\'ri javob: ' + q.answers[0]);
+      feedback.style.color = isCorrect ? 'var(--accent2)' : 'var(--danger)';
+      card.appendChild(feedback);
+      if(isCorrect) state.score++;
+      checkBtn3.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+    };
+    app.appendChild(checkBtn3);
+  } else if(q.type === 'order'){
+    const chosen = [];
+    const btns = [];
+
+    function refreshOrderLabels(){
+      q.items.forEach((txt,idx)=>{
+        const pos = chosen.indexOf(idx);
+        btns[idx].textContent = (pos>=0 ? (pos+1)+') ' : '') + txt;
+      });
+    }
+
+    q.items.forEach((txt,idx)=>{
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.textContent = txt;
+      b.onclick = ()=>{
+        if(answered) return;
+        if(chosen.includes(idx)){
+          if(chosen[chosen.length-1] === idx){
+            chosen.pop();
+            refreshOrderLabels();
+          }
+          return;
+        }
+        chosen.push(idx);
+        refreshOrderLabels();
+      };
+      btns.push(b);
+      card.appendChild(b);
+    });
+    app.appendChild(card);
+
+    const checkBtn4 = document.createElement('button');
+    checkBtn4.textContent = 'Javobni tekshirish';
+    checkBtn4.onclick = ()=>{
+      if(answered) return;
+      if(chosen.length < q.items.length) return;
+      answered = true;
+      const isCorrect = chosen.every((btnIdx,pos)=> q.indices[btnIdx] === pos);
+      btns.forEach((bb,idx)=>{
+        bb.disabled = true;
+        const pos = chosen.indexOf(idx);
+        const isRightPos = q.indices[idx] === pos;
+        bb.classList.add(isRightPos ? 'correct' : 'wrong');
+      });
+      if(isCorrect) state.score++;
+      checkBtn4.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+    };
+    app.appendChild(checkBtn4);
   } else {
     q.opts.forEach((opt,idx)=>{
       const b = document.createElement('button');
@@ -500,3 +611,4 @@ render();
 </script>
 </body>
 </html>
+  
